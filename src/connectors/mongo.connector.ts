@@ -33,9 +33,8 @@ export class MongoConnector implements Connector {
 				{
 					minPoolSize: config.MONGO.MIN_POOL,
 					maxPoolSize: config.MONGO.MAX_POOL,
-					// retryWrites is on by default; explicit for clarity. If the
-					// primary fails over mid-upsert the driver retries once.
-					retryWrites: true,
+					// DocumentDB does not support retryable writes — must be false.
+					retryWrites: false,
 				},
 			)
 			logger.info(
