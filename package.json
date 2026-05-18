@@ -24,7 +24,7 @@
 		"morgan": "^1.10.0",
 		"newrelic": "^12.3.0",
 		"reflect-metadata": "^0.2.2",
-		"tst-base": "file:../base"
+		"tst-base": "file:./base"
 	},
 	"devDependencies": {
 		"@types/body-parser": "^1.19.5",

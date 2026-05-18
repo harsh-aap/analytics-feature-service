@@ -7,7 +7,7 @@ WORKDIR /app
 # "file:./base" reference in package.json before installing dependencies.
 COPY base ./base
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --non-interactive
+RUN yarn install --non-interactive
 
 COPY . .
 RUN yarn build
