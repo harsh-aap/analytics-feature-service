@@ -31,6 +31,8 @@ spec:
         prometheus.io/path:   "/metrics"
     spec:
       serviceAccountName: feature-service
+      imagePullSecrets:
+        - name: ghcr-pull-secret
 
       # 60s > graceful shutdown — must commit Kafka offsets and
       # flush any in-flight MongoDB writes before SIGKILL.
