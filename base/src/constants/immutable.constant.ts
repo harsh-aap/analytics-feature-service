@@ -1,0 +1,6 @@
+export const EMPTY_STRING: string = Object.freeze('')
+export const EMPTY_ARRAY: readonly [] = Object.freeze([])
+export const EMPTY_OBJECT: object = Object.freeze({})
+export const RUPEE_ICON: string = Object.freeze('₹')
+export const SINGLE_SPACE: string = Object.freeze(' ')
+export const HYPHEN: string = Object.freeze('-')

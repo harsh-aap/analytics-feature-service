@@ -1,0 +1,18 @@
+# ── Service — feature-service ─────────────────────────────
+# Internal only — Prometheus scrapes consumer lag metrics.
+apiVersion: v1
+kind: Service
+metadata:
+  name: feature-service
+  namespace: analytics
+  labels:
+    app: feature-service
+spec:
+  type: ClusterIP
+  selector:
+    app: feature-service
+  ports:
+    - name: http
+      port: 3002
+      targetPort: 3002
+      protocol: TCP

@@ -1,0 +1,13 @@
+# ── PodDisruptionBudget — feature-service ─────────────────
+# At least 1 consumer always running — prevents a full
+# consumer group rebalance during node drains or upgrades.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: feature-service
+  namespace: analytics
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: feature-service

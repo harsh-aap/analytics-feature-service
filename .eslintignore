@@ -1,0 +1,4 @@
+dist
+node_modules
+.eslintrc.js
+nodemon.consumer.json

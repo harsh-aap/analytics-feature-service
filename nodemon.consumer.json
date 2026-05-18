@@ -1,0 +1,6 @@
+{
+	"watch": ["src"],
+	"ext": "ts,json",
+	"ignore": ["src/**/*.spec.ts", "dist"],
+	"exec": "NODE_ENV=development node -r ts-node/register --env-file=.env ./src/bin/consumer.bin.ts"
+}

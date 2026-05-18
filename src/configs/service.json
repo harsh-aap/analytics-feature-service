@@ -1,0 +1,55 @@
+{
+	"basePropKeys": [],
+	"LOG_LEVEL": "INFO",
+
+	"SERVICE_NAME": "feature-service",
+	"EXPRESS_HOST": "0.0.0.0",
+	"EXPRESS_PORT": 3002,
+
+	"ODIN_ROOT_CONFIG_PATH": "/zookeeper/system/aap",
+	"ZK_CONFIG_MAX_RETRIES": 3,
+	"ZK_CONFIG_PROMISE_TIMEOUT": 10000,
+	"ZK_CONFIG_TIMEOUT_INTERVAL": 10000,
+	"ZK_CONFIG_CONNECTION_STRING": "",
+
+	"KAFKA": {
+		"BROKERS": ["localhost:9092"],
+		"CLUSTER_ARN": "",
+		"REGION": "ap-south-1"
+	},
+	"BUSINESS_TOPICS": {
+		"ecommerce": "ecommerce-events",
+		"saas": "saas-events",
+		"shopify": "shopify-events",
+		"gaming": "gaming-events",
+		"media": "media-events"
+	},
+	"DLQ_TOPIC": "features_dlq",
+	"CONSUMER_GROUP_ID": "feature-service-builder",
+	"PARTITIONS_CONCURRENCY": 8,
+	"MAX_IN_FLIGHT": 200,
+	"HEARTBEAT_INTERVAL_MS": 5000,
+
+	"MONGO": {
+		"HOST": "localhost",
+		"PORT": 27017,
+		"DATABASE": "features",
+		"USER": "",
+		"PASSWORD": "",
+		"COLLECTION": "user_features",
+		"MIN_POOL": 5,
+		"MAX_POOL": 100
+	},
+
+	"REDIS": {
+		"HOST": "localhost",
+		"PORT": 6379,
+		"PASSWORD": "",
+		"DATABASE": 0
+	},
+	"IDEMPOTENCY_ENABLED": true,
+	"IDEMPOTENCY_TTL_SECONDS": 86400,
+
+	"SENTRY_DSN": "",
+	"NEW_RELIC_LICENSE_KEY": ""
+}

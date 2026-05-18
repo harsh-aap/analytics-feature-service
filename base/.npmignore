@@ -1,0 +1,20 @@
+node_modules/
+
+# src/
+
+.gitignore
+
+.eslintrc.js
+.eslintignore
+
+.prettierrc
+.prettierignore
+
+# tsconfig.json
+
+# markdown files
+*.md
+
+# jest files
+__tests__/
+jest.config.js

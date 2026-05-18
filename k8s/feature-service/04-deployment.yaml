@@ -1,0 +1,114 @@
+# ── Deployment — feature-service ──────────────────────────
+# Node.js Kafka consumer: reads brand-specific topics from MSK,
+# upserts per-user features into MongoDB (feature store).
+# Redis provides idempotency cache for safe Kafka redelivery.
+#
+# Replace 381492045894 before applying.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feature-service
+  namespace: analytics
+  labels:
+    app: feature-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: feature-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: feature-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port:   "3002"
+        prometheus.io/path:   "/metrics"
+    spec:
+      serviceAccountName: feature-service
+
+      # 60s > graceful shutdown — must commit Kafka offsets and
+      # flush any in-flight MongoDB writes before SIGKILL.
+      terminationGracePeriodSeconds: 60
+
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: feature-service
+
+      containers:
+        - name: feature-service
+          image: ghcr.io/harsh-aap/analytics-feature-service:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3002
+              protocol: TCP
+
+          envFrom:
+            - configMapRef:
+                name: feature-service-config
+
+          env:
+            - name: MONGO_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: feature-service-secrets
+                  key: MONGO_HOST
+            - name: MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: feature-service-secrets
+                  key: MONGO_USER
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: feature-service-secrets
+                  key: MONGO_PASSWORD
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: feature-service-secrets
+                  key: REDIS_HOST
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: feature-service-secrets
+                  key: REDIS_PASSWORD
+
+          resources:
+            requests:
+              cpu:    250m
+              memory: 256Mi
+            limits:
+              cpu:    1000m
+              memory: 512Mi
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3002
+            initialDelaySeconds: 10
+            periodSeconds:       15
+            failureThreshold:    3
+
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: 3002
+            initialDelaySeconds: 15
+            periodSeconds:       20
+            failureThreshold:    3
+
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 5"]

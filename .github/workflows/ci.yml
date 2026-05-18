@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  GHCR_IMAGE: ghcr.io/harsh-aap/analytics-feature-service
+
+jobs:
+  build:
+    name: Build & Push to GHCR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write   # required to push to ghcr.io
+      id-token: write   # required for OIDC auth to AWS (kubectl deploy)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Build on every push/PR — catches Dockerfile errors on PRs too.
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t $GHCR_IMAGE:${{ github.sha }} \
+            -t $GHCR_IMAGE:latest \
+            .
+
+      # Push to GHCR only on main — PRs just build.
+      - name: Login to GitHub Container Registry
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
+
+      - name: Push image to GHCR
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker push $GHCR_IMAGE:${{ github.sha }}
+          docker push $GHCR_IMAGE:latest
+
+      # Deploy to EKS — uses AWS OIDC for kubectl access.
+      - name: Configure AWS credentials (OIDC — no long-lived keys)
+        if: github.ref == 'refs/heads/main'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region:     ${{ secrets.AWS_REGION }}
+
+      - name: Update kubeconfig for EKS
+        if: github.ref == 'refs/heads/main'
+        run: |
+          aws eks update-kubeconfig \
+            --name   analytics-cluster \
+            --region ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to EKS (rolling update)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          kubectl set image deployment/feature-service \
+            feature-service=$GHCR_IMAGE:${{ github.sha }} \
+            --namespace analytics
+
+          kubectl rollout status deployment/feature-service \
+            --namespace analytics \
+            --timeout 300s

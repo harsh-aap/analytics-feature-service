@@ -1,0 +1,13 @@
+export const MILLISECONDS_PER_SECOND: number = 1000
+export const SECONDS_PER_MINUTE: number = 60
+export const MINUTES_PER_HOUR: number = 60
+export const HOURS_PER_DAY: number = 24
+export const TWENTY_FOUR_HOUR_FORMAT: string = 'H'
+export const MINUTES_FORMAT: string = 'm'
+export const SECOND_FORMAT: string = 's'
+export const MILLISECOND_FORMAT: string = 'SSS'
+export const IST_TIMEZONE: string = 'Asia/Kolkata'
+export const ISO_DATE_FORMAT: string = 'YYYY-MM-DD'
+export const LOCAL_DATE_FORMAT: string = 'DD-MM-YYYY'
+export const ISO_DATE_TIME_FORMAT: string = 'YYYY-MM-DDThh:mm:ss'
+export const TIMEZONE_ASIA: string = 'Asia/Calcutta'

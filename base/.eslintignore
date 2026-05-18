@@ -1,0 +1,6 @@
+dist/
+node_modules/
+diagrams/
+.eslintrc.js
+
+**/example.ts

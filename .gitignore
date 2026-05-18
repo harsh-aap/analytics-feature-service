@@ -1,0 +1,10 @@
+node_modules
+dist
+base/node_modules
+base/dist
+.env
+.env.*
+!.env.example
+*.log
+newrelic_agent.log
+.DS_Store

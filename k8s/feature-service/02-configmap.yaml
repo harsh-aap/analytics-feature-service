@@ -1,0 +1,43 @@
+# ── ConfigMap — feature-service ───────────────────────────
+# Non-sensitive config. Mongo/Redis credentials in the Secret.
+# BUSINESS_TOPICS / CONSUMER_GROUP_ID set in Deployment env.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: feature-service-config
+  namespace: analytics
+data:
+  SERVICE_NAME:           "feature-service"
+  NODE_ENV:               "production"
+  EXPRESS_HOST:           "0.0.0.0"
+  EXPRESS_PORT:           "3002"
+  LOG_LEVEL:              "INFO"
+
+  # Odin / ZK — disabled; all config comes from env vars
+  ZK_CONFIG_CONNECTION_STRING: ""
+  ZK_CONFIG_MAX_RETRIES:      "3"
+  ZK_CONFIG_PROMISE_TIMEOUT:  "10000"
+  ZK_CONFIG_TIMEOUT_INTERVAL: "10000"
+  ODIN_ROOT_CONFIG_PATH:      "/zookeeper/system/aap"
+
+  # Kafka — clusterArn triggers MSK IAM auth in tst-base KafkaService.
+  KAFKA_CLUSTER_ARN:      "arn:aws:kafka:ap-south-1:381492045894:cluster/analytics-msk-v1/49b2b9a1-8070-4ad4-b595-a90733d5c97a-2"
+  KAFKA_REGION:           "ap-south-1"
+  BUSINESS_TOPICS:        "aap:events_aap,gemsmantra:events_gemsmantra,horocosmo:events_horocosmo"
+  CONSUMER_GROUP_ID:      "feature-service-builder"
+  DLQ_TOPIC:              "features_dlq"
+  PARTITIONS_CONCURRENCY: "8"
+  MAX_IN_FLIGHT:          "200"
+  HEARTBEAT_INTERVAL_MS:  "5000"
+
+  # Idempotency — enable once ElastiCache Redis is deployed.
+  # MUST stay true in prod: $inc/$addToSet ops are not idempotent.
+  IDEMPOTENCY_ENABLED:    "false"
+  IDEMPOTENCY_TTL_SECONDS: "86400"
+
+  MONGO_DATABASE:         "features"
+  MONGO_COLLECTION:       "user_features"
+  MONGO_MIN_POOL:         "5"
+  MONGO_MAX_POOL:         "100"
+  REDIS_PORT:             "6379"
+  REDIS_DATABASE:         "0"
